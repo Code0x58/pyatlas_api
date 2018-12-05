@@ -1,4 +1,4 @@
-from urllib.parse import quote_plus
+from urllib.parse import quote_plus, urlencode
 from datetime import datetime, date
 import dateutil.parser
 import requests
@@ -19,6 +19,15 @@ class atlas_request:
     def __init__(self, query, **kwargs):
         self.query = query
 
+        if self.ATLAS_API_KEY is None:
+            raise atlas_request_error(
+                "You must set an Atlas API key on this class before use, e.g.:"
+                "from atlas_api import atlas_request\n"
+                "atlas_request.ATLAS_API_KEY='YOUR_KEY_HERE'")
+
+        call_parameters = {
+            'api_key': self.ATLAS_API_KEY,
+        }
         # Parse args
         for k, v in kwargs.items():
             if isinstance(k, str):
@@ -26,8 +35,9 @@ class atlas_request:
             if isinstance(v, str):
                 v = v.strip()
             if k and v:
-                setattr(self, k, v)
+                call_parameters[k] = self.__type_massage__(v)
 
+        self.call_parameters = call_parameters
         self.__request_cache = {}
 
     def __type_massage__(self, t):
@@ -43,23 +53,7 @@ class atlas_request:
             return str(t)
 
     def uri(self, endpoint):
-        if self.ATLAS_API_KEY is None:
-            raise atlas_request_error(
-                "You must set an Atlas API key on this class before use, e.g.:"
-                "from atlas_api import atlas_request\n"
-                "atlas_request.ATLAS_API_KEY='YOUR_KEY_HERE'")
-
-        uri_string = self.ATLAS_API_BASE_URL + \
-            endpoint + '?api_key=' + self.ATLAS_API_KEY
-
-        for k in [k for k in dir(self) if not callable(getattr(self, k))
-                  and not k.startswith('_') and not k.isupper()]:
-            v = getattr(self, k)
-            if v is None:
-                continue
-
-            uri_string += '&%s=%s' % (k, quote_plus(self.__type_massage__(v)))
-        return uri_string
+        return self.ATLAS_API_BASE_URL + endpoint + '?' + urlencode(self.call_parameters)
 
     def url(self, endpoint):
         return self.uri(endpoint)
