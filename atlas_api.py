@@ -106,111 +106,53 @@ class atlas_request:
 
     # The various endpoint utility functions...
 
-    def volume(self):
-        return self.run('volume').output
+    for endpoint in (
+            'ages',
+            'brands',
+            'channels',
+            'countries',
+            'demographics',
+            'education',
+            'emotions',
+            'entities',
+            'events',
+            'gender',
+            'hashtags',
+            'headlines',
+            'home-ownership',
+            'household-value',
+            'income',
+            'influence-distribution',
+            'influencers',
+            'interests',
+            'languages',
+            'linguistics-stats',
+            'negative-keywords',
+            'negative-topics',
+            'positive-keywords',
+            'positive-topics',
+            'post-interests',
+            'posts',
+            'query-test',
+            'sentiment',
+            'states',
+            'stories',
+            'themes',
+            'timeofday',
+            'topic-clusters',
+            'topics',
+            'volume',
+    ):
+        def add_endpoint(namespace, endpoint):
+            def function(self):
+                return self.run(endpoint).output
+            function_name = endpoint.replace("-", "_")
+            function.__name__ = function_name
+            namespace[function_name]
 
-    def posts(self):
-        return self.run('posts').output
-
-    def topics(self):
-        return self.run('topics').output
-
-    def positive_topics(self):
-        return self.run('positive-topics').output
-
-    def negative_topics(self):
-        return self.run('negative-topics').output
-
-    def brands(self):
-        return self.run('brands').output
-
-    def hashtags(self):
-        return self.run('hashtags').output
-
-    def topic_clusters(self):
-        return self.run('topic-clusters').output
-
-    def headlines(self):
-        return self.run('headlines').output
-
-    def sentiment(self):
-        return self.run('sentiment').output
-
-    def positive_keywords(self):
-        return self.run('positive-keywords').output
-
-    def negative_keywords(self):
-        return self.run('negative-keywords').output
-
-    def linguistics_stats(self):
-        return self.run('linguistics-stats').output
-
-    def themes(self):
-        return self.run('themes').output
-
-    def emotions(self):
-        return self.run('emotions').output
-
-    def languages(self):
-        return self.run('languages').output
-
-    def timeofday(self):
-        return self.run('timeofday').output
-
-    def channels(self):
-        return self.run('channels').output
-
-    def gender(self):
-        return self.run('gender').output
-
-    def states(self):
-        return self.run('states').output
-
-    def countries(self):
-        return self.run('countries').output
-
-    def home_ownership(self):
-        return self.run('home-ownership').output
-
-    def income(self):
-        return self.run('income').output
-
-    def household_value(self):
-        return self.run('household-value').output
-
-    def education(self):
-        return self.run('education').output
-
-    def demographics(self):
-        return self.run('demographics').output
-
-    def ages(self):
-        return self.run('ages').output
-
-    def influence_distribution(self):
-        return self.run(
-            'influence-distribution').output
-
-    def influencers(self):
-        return self.run('influencers').output
-
-    def interests(self):
-        return self.run('interests').output
-
-    def post_interests(self):
-        return self.run('post-interests').output
-
-    def query_test(self):
-        return self.run('query-test').output
-
-    def events(self):
-        return self.run('events').output
-
-    def stories(self):
-        return self.run('stories').output
-
-    def entities(self):
-        return self.run('entities').output
+        add_endpoint(locals(), endpoint)
+        del add_endpoint
+        del endpoint
 
     def meta(self):
         return self.run('volume').query_meta
